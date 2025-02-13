@@ -6,6 +6,7 @@ export interface TSpeaker {
 }
 
 export interface TEvent {
+  date: string | number | Date;
   id: number;
   name: string;
   event_type: TEventType;
