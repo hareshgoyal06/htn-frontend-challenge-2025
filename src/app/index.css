@@ -107,62 +107,103 @@
     background-position: 0 center;
   }
 }
-
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background: #1e3a8a; /* Blue-900 */
-    border-right: 4px solid #94a3b8; /* Gray-400 */
-    box-shadow: 6px 0px #64748b; /* Gray-500 shadow */
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: "Press Start 2P", cursive;
-    z-index: 1000; /* Ensures it's above other content */
-  }
-  
-  .sidebar-title {
-    color: white;
-    font-size: 16px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-  }
-  
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
-  }
-  
-  .nav-item {
-    text-decoration: none;
-    color: #e2e8f0; /* Gray-200 */
-    font-size: 12px;
-    background: #2563eb; /* Blue-600 */
-    padding: 10px 12px;
-    text-align: center;
-    border: 2px solid #1e40af; /* Blue-800 */
-    box-shadow: 3px 3px #1e3a8a; /* Blue-900 */
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .nav-item:hover {
-    background: white;
-    color: black;
-    box-shadow: none;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: -60px; /* Slightly more visible */
+  width: 80px; /* Reduced width to make it skinnier */
+  height: 100vh;
+  background: #1e3a8a; /* Blue-900 */
+  border-right: 4px solid #94a3b8; /* Gray-400 */
+  box-shadow: 4px 0px #64748b; /* Gray-500 shadow */
+  padding: 10px; /* Reduced padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Press Start 2P", cursive;
+  z-index: 1000; /* Ensures it's above other content */
+  transition: left 0.3s ease-in-out;
+}
 
-  
+.sidebar:hover,
+  .sidebar:focus-within, /* Allows focus interaction */
+  .sidebar:hover + .main-content {
+  left: 0; /* Show sidebar on hover */
+}
 
-  /* Makes sure the main content is not covered */
-  .main-content {
-    margin-left: 240px; /* Adjusted to sidebar width */
-    padding: 20px;
-  }
-  
+.sidebar-title {
+  color: white;
+  font-size: 14px; /* Adjusted font size */
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Reduced spacing */
+  width: 100%;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #e2e8f0; /* Gray-200 */
+  font-size: 25px; /* Smaller text size */
+  background: #2563eb; /* Blue-600 */
+  padding: 8px 10px;
+  text-align: center;
+  border: 2px solid #1e40af; /* Blue-800 */
+  box-shadow: 2px 2px #1e3a8a; /* Blue-900 */
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-item:hover {
+  background: white;
+  color: black;
+  box-shadow: none;
+}
+
+.sign-in {
+  margin-top: 15px;
+  background-color: #3b82f6 !important; /* Blue-500 */
+  border: 2px solid #1e40af; /* Blue-800 */
+  color: white !important;
+  font-size: 10px; /* Smaller button text */
+  padding: 8px 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+}
+
+.sign-in:hover {
+  background: white !important;
+  color: black !important;
+}
+
+/* Adjusts main content to fit properly */
+.main-content {
+  margin-left: 40px; /* Adjusted for easier access */
+  padding: 20px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar:hover + .main-content {
+  margin-left: 100px; /* Move content when sidebar is shown */
+}
+
+.kirby-container {
+  margin-top: 10px; /* Reduced space */
+  display: flex;
+  justify-content: center;
+}
+
+/* Hide default scrollbar but allow scrolling */
+.custom-scrollbar {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer & Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
