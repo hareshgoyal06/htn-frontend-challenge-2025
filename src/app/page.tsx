@@ -1,101 +1,156 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import type { TEvent } from "../types/event";
+import { useRouter } from "next/navigation";
+import { QuantumEventCard } from "./components/QuantumEventCard";
+import QuantumBackground from "./components/QuantumBackground";
+import { groupEventsByDay } from "../utils/eventUtils";
+import { DateSelector } from "./components/DateSelector";
+import Button from "./components/Button";
+import { motion, useScroll, useSpring } from "framer-motion";
+import ParallaxScroll from "./components/ParallaxScroll";
+import { Card } from 'pixel-retroui';
+
+
+async function fetchEvents(): Promise<TEvent[]> {
+  const response = await fetch("https://api.hackthenorth.com/v3/events");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch events");
+  }
+
+  const events: TEvent[] = await response.json();
+  return events.sort((a, b) => a.start_time - b.start_time);
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [events, setEvents] = useState<TEvent[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return typeof window !== "undefined" ? localStorage.getItem("isLoggedIn") === "true" : false;
+  });
+  const [selectedDate, setSelectedDate] = useState("");
+  const router = useRouter();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ container: scrollContainerRef });
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  useEffect(() => {
+    fetchEvents().then((fetchedEvents) => {
+      setEvents(fetchedEvents);
+      const eventDates = Object.keys(groupEventsByDay(fetchedEvents));
+      setSelectedDate(eventDates[0]);
+    });
+
+    // Retrieve login state
+    const savedLoginState = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(savedLoginState);
+  }, []);
+
+  const handleLoginToggle = () => {
+    const newLoginState = !isLoggedIn;
+    setIsLoggedIn(newLoginState);
+    localStorage.setItem("isLoggedIn", newLoginState.toString());
+    router.push(newLoginState ? "/login" : "/logout");
+  };
+
+  const eventsByDay = groupEventsByDay(
+    events.filter((event) => event.permission !== "private" || isLoggedIn)
   );
+  const dates = Object.keys(eventsByDay);
+
+
+return (
+  <div className=" overflow-hidden h-screen">
+    {/* ✅ Background Parallax */}
+    <div className="absolute top-0 left-0 w-full h-full z-[-1]">
+      <ParallaxScroll />
+    </div>
+    {/* ✅ Foreground Content */}
+    <div className="relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header */}
+        <header className="mb-12">
+        <h1 className="heading">Press Start 2P Font</h1>
+
+          <div className="flex justify-between items-center">
+            <h1 className="text-4xl font-press-start-2p font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+              <Card>
+                Hackathon Inc. 
+              </Card>
+            </h1>
+            <Button onClick={handleLoginToggle}>
+              {isLoggedIn ? "Logout" : "Login"}
+            </Button>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main>
+          <DateSelector dates={dates} selectedDate={selectedDate} onDateSelect={setSelectedDate} />
+
+          {/* Event Section */}
+          <div className="bg-gray-800/90 backdrop-blur-lg shadow-lg rounded-lg p-6 mb-8 relative border border-gray-700">
+            <h2 className="text-2xl font-bold mb-4 text-blue-300">{selectedDate}</h2>
+            <div
+              ref={scrollContainerRef}
+              className="space-y-4 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar"
+            >
+              {eventsByDay[selectedDate]?.map((event, index) => (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <QuantumEventCard event={event} />
+                </motion.div>
+              ))}
+            </div>
+            <motion.div className="absolute bottom-0 left-0 right-0 h-1 bg-rose-300" style={{ scaleX }} />
+          </div>
+
+          {/* Show login prompt only when user is NOT logged in */}
+          {!isLoggedIn && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-12 bg-gray-800/80 backdrop-blur-lg border-l-4 border-rose-300 p-6 rounded-lg flex items-center shadow-md"
+            >
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-6 w-6 text-rose-300"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm text-rose-300">
+                  You are in the public quantum realm.{" "}
+                  <Button onClick={handleLoginToggle} className="text-sm px-3 py-2">
+                    Log in
+                  </Button>{" "}
+                  to access the private dimension of events.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </main>
+      </div>
+    </div>
+  </div>
+);
 }
