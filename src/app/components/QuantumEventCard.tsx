@@ -1,9 +1,8 @@
-"use client"
-import type { TEvent } from "../../types/event"
-import { ClockIcon, UserIcon, LinkIcon } from "lucide-react"
+"use client";
+import type { TEvent } from "../../types/event";
+import { ClockIcon, UserIcon, LinkIcon } from "lucide-react";
 
 export function QuantumEventCard({ event }: { event: TEvent }) {
-
   return (
     <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-blue-500 hover:border-blue-400 transform hover:-translate-y-1">
       <div className="p-4">
@@ -22,7 +21,11 @@ export function QuantumEventCard({ event }: { event: TEvent }) {
           {event.speakers.length > 0 && (
             <div className="flex items-center text-green-400">
               <UserIcon className="h-4 w-4 mr-2" />
-              <span>{event.speakers.map((speaker: { name: any }) => speaker.name).join(", ")}</span>
+              <span>
+                {event.speakers
+                  .map((speaker: { name: any }) => speaker.name)
+                  .join(", ")}
+              </span>
             </div>
           )}
           {(event.public_url || event.private_url) && (
@@ -49,5 +52,5 @@ export function QuantumEventCard({ event }: { event: TEvent }) {
         </a>
       </div>
     </div>
-  )
+  );
 }

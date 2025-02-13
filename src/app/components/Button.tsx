@@ -1,21 +1,51 @@
-import type React from "react"
+import React, { useState } from "react";
+import { Button as PixelButton } from "pixel-retroui";
 
 interface ButtonProps {
-  children: React.ReactNode
-  onClick?: () => void
-  className?: string
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, onClick, className = "" }) => {
+const CustomButton: React.FC<ButtonProps> = ({
+  children,
+  onClick,
+  className = "",
+}) => {
+  const [showCoin, setShowCoin] = useState(false);
+
+  const handleClick = () => {
+    setShowCoin(true); // Show the coin
+
+    // Keep coin visible for 1 second before hiding
+    setTimeout(() => {
+      setShowCoin(false);
+    }, 1000);
+
+    if (onClick) {
+      setTimeout(() => {
+        onClick(); // Ensure login toggle happens **after** the coin animation
+      }, 500); // Delay state change to prevent re-render from hiding the coin early
+    }
+  };
+
   return (
-    <button
-      onClick={onClick}
-      className={`group group-hover:before:duration-500 group-hover:after:duration-500 after:duration-500 hover:border-rose-300 hover:before:[box-shadow:_20px_20px_20px_30px_#a21caf] duration-500 before:duration-500 hover:duration-500 underline underline-offset-2 hover:after:-right-8 hover:before:right-12 hover:before:-bottom-8 hover:before:blur hover:underline hover:underline-offset-4 origin-left hover:decoration-2 hover:text-rose-300 relative bg-neutral-800 h-16 w-64 border text-left p-3 text-gray-50 text-base font-bold rounded-lg overflow-hidden before:absolute before:w-12 before:h-12 before:content-[''] before:right-1 before:top-1 before:z-10 before:bg-violet-500 before:rounded-full before:blur-lg after:absolute after:z-10 after:w-20 after:h-20 after:content-[''] after:bg-rose-300 after:right-8 after:top-3 after:rounded-full after:blur-lg ${className}`}
-    >
-      {children}
-    </button>
-  )
-}
+    <div className="relative flex flex-col items-center">
+      {/* Coin Icon (Visible only when showCoin is true) */}
+      {showCoin && (
+        <i className="nes-icon coin is-large absolute -top-16 animate-bounce transition-opacity duration-300"></i>
+      )}
 
-export default Button
+      {/* Button */}
+      <PixelButton
+        onClick={handleClick}
+        type="button"
+        className={`nes-btn is-primary ${className}`}
+      >
+        {children}
+      </PixelButton>
+    </div>
+  );
+};
 
+export default CustomButton;

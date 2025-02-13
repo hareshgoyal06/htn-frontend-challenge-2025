@@ -13,7 +13,7 @@ const layers: Layer[] = [
   { src: "/images/layer4.png", zIndex: 3, speed: 75, offsetY: "30px" },
   { src: "/images/layer3.png", zIndex: 4, speed: 74, offsetY: "50px" },
   { src: "/images/layer2.png", zIndex: 5, speed: 70, offsetY: "50px" },
-  { src: "/images/layer1.png", zIndex: 6, speed: 63 },
+  { src: "/images/layer1.png", zIndex: 6, speed: 50 },
 ];
 
 const ParallaxScroll: React.FC = () => {

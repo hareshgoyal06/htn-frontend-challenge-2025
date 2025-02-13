@@ -11,7 +11,11 @@ async function fetchEvent(id: number): Promise<TEvent> {
   return response.json();
 }
 
-export default async function EventPage({ params }: { params: { id: string } }) {
+export default async function EventPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const event = await fetchEvent(parseInt(params.id));
 
   return (
