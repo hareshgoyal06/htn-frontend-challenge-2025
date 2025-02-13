@@ -1,10 +1,14 @@
 # Overview 
 
-This is a retro 8-bit implementation of the 2025 HTN Frontend Challenge. This hackathon was branded a generic hackathon through the "Hackthon Inc." brand. The main purpose of this interface was to display events generated from the backend. This website is deployed on the 
-following domain: https://htn-frontend-challenge-2025.vercel.app/ 
+This is a retro 8-bit implementation of the 2025 HTN Frontend Challenge. This hackathon was branded a generic hackathon through the "Hackthon Inc." brand. The main purpose of this interface was to display events generated from the backend. 
+
+This website is deployed on the following domain: 
+🔗 **Live Demo:** [htn-frontend-challenge-2025.vercel.app](https://htn-frontend-challenge-2025.vercel.app/)  
 
 I've documented the functionality of this app through this video. 
-https://github.com/user-attachments/assets/d0d7f79f-e2aa-4b6f-a841-0d3f9e358bbc
+📽️ **Demo Video:** [Watch Here](https://github.com/user-attachments/assets/d0d7f79f-e2aa-4b6f-a841-0d3f9e358bbc)
+
+
 
 
 # WRITE-UP
