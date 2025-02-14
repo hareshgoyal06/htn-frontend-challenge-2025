@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import type { TEvent, TEventType, TPermission } from "../types/event";
+import type { TEvent, TEventType } from "../types/event";
 import { EventCard } from "./components/EventCard";
 import { groupEventsByDay } from "../utils/eventUtils";
 import { motion, useScroll, useSpring } from "framer-motion";
@@ -24,6 +24,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCriteria, setFilterCriteria] = useState<TEventType | null>(null);
   const [sortCriteria, setSortCriteria] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ container: scrollContainerRef });
   const scaleX = useSpring(scrollYProgress, {
@@ -31,6 +32,12 @@ export default function Home() {
     damping: 30,
     restDelta: 0.001,
   });
+
+  // Check login status from localStorage
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+  }, []);
 
   useEffect(() => {
     fetchEvents().then((fetchedEvents) => {
@@ -46,6 +53,12 @@ export default function Home() {
     let filteredEvents = allEvents.filter((event) =>
       event.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
+
+    // Hide private events if the user is not logged in
+    if (!isLoggedIn) {
+      filteredEvents = filteredEvents.filter((event) => event.permission === "public");
+    }
+
     if (filterCriteria) {
       filteredEvents = filteredEvents.filter(
         (event) => event.event_type === filterCriteria,
@@ -59,7 +72,7 @@ export default function Home() {
       filteredEvents.sort((a, b) => a.name.localeCompare(b.name));
     }
     return filteredEvents;
-  }, [searchQuery, filterCriteria, sortCriteria, allEvents]);
+  }, [searchQuery, filterCriteria, sortCriteria, allEvents, isLoggedIn]);
 
   return (
     <div className="overflow-hidden h-screen">
