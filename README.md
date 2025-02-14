@@ -10,7 +10,7 @@ I've documented the functionality of this app through this video.
 
 
 
-https://github.com/user-attachments/assets/02ab1929-63be-4960-8ef0-ae884d318ada
+https://github.com/user-attachments/assets/2c836b80-7a1b-46c6-ac86-191bad12df4d
 
 
 
